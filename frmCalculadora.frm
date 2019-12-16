@@ -324,47 +324,8 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
-''''    PARA FAZER A IDENTIFICAÇÃO DAS OPERAÇÕES MATEMÁTICAS É NECESSÁRIO IMPLEMENTAR UM PILHA (Ver estrutura de dados)
-''''    Tendo em visto que não existem ponteiros em VB6, talvez seja possívels substituir as estruturas de dados do C por
-''''    classe
-''''    http://www.macoratti.net/clas_dat.htm
-
-
-Function Sum(formula() As String) As Double
-    Dim numbers1(10) As Double
-    Dim soma As Double
-    Dim i As Integer
-    
-    soma = 0
-    
-    'Convertendo para Double e armazenando no rolê
-    For i = 0 To UBound(formula())
-        If (IsNumeric(formula(i))) Then
-            numbers1(i) = CDbl(formula(i))
-        End If
-    Next
-    
-    For i = 0 To UBound(numbers1())
-        soma = Abs(soma) + numbers1(i)
-    Next i
-    
-    Sum = soma
-    
-End Function
-
-Function Sum2(numbers4() As Double)
-    Dim soma As Double
-    Dim i As Integer
-    
-    soma = 0
-    
-    'Somando
-    For i = 0 To UBound(numbers4())
-        soma = Abs(soma) + numbers4(i)
-    Next i
-    
-    'Sum2 = soma
-    Me.txtCalc = CStr(soma)
+Function Sum(n1 As Double, n2 As Double) As Double
+    Sum = n1 + n2
     
 End Function
 
@@ -389,31 +350,39 @@ Function Subt(formula() As String) As Double
     Subt = subtraction
 End Function
 
-Function OpsController(formula() As String) 'As Double()
+Function OpsController(formula() As String)
     Dim numbers3(10) As Double
     Dim i As Integer
+    
+    Dim total As Double
+    total = 0
     
     'Convertendo para Double e armazenando no rolê
     For i = 0 To UBound(formula())
         'Se for número
         If (IsNumeric(formula(i))) Then
             numbers3(i) = CDbl(formula(i))
+        Else
+            ''Desta forma, ambas as arrays formula() quanto a numbers3() terão o mesmo tamanho. Onde houver símbolos em formula,
+            'haverá o número 0 em numbers3()
+            numbers3(i) = 0
         End If
     Next
     
     'Agora comparar numbers() com formula() para fazer as operações na ordem correta
     For i = 0 To UBound(formula())
-        'Se i for um número e i-1 for um símbolo, realizar a operação
-        'If (CStr(numbers3(i)) = formula(i) And IsNumeric(formula(i - 1) = False) And i > 0) Then
-        If (IsNumeric(formula(i - 1) = False) And i > 0) Then
-            If (formula(i - 1) = "+") Then
-                Sum2 (numbers3())
+        'Se for um símbolo, realizar operação
+        If (IsNumeric(formula(i)) = False) Then
+            If (formula(i) = "+") Then
+                total = total + Sum(numbers3(i - 1), numbers3(i + 1))
+                ''Zerar os números após a adição (Pop)
+                numbers3(i - 1) = 0
+                numbers3(i + 1) = 0
             End If
         End If
     Next
     
-    'OpsController = numbers()
-
+    Me.txtCalc = CStr(total)
 End Function
 
 Function StrToArray(formula As String) As String()
@@ -429,7 +398,6 @@ Function StrToArray(formula As String) As String()
 End Function
 
 Private Sub Form_KeyPress(KeyAscii As Integer)
-    'Dim text() As String
 
     Select Case Chr(KeyAscii)
         Case "0"
@@ -464,7 +432,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
             Me.txtCalc = Me.txtCalc & "-"
         Case "a"
             'Me.txtCalc = OpsController(StrToArray(Me.txtCalc))
-            OpsController (StrToArray(Me.txtCalc))
+            Call OpsController(StrToArray(Me.txtCalc))
            'Jeito antigo (que funciona)
            'Me.txtCalc = Subt(StrToArray(Me.txtCalc))
             
