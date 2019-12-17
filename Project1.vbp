@@ -5,7 +5,6 @@ Form=frm_Main.frm
 Form=frm_Relatorio.frm
 Reference=*\G{6B263850-900B-11D0-9484-00A0C91110ED}#1.0#0#..\..\..\..\Windows\SysWOW64\msstdfmt.dll#Microsoft Data Formatting Object Library 6.0 (SP6)
 Form=frmCalculadora.frm
-Class=Class1; Class1.cls
 IconForm="frmLista"
 Startup="frmMain"
 HelpFile=""

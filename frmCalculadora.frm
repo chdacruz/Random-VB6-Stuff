@@ -326,28 +326,18 @@ Option Explicit
 
 Function Sum(n1 As Double, n2 As Double) As Double
     Sum = n1 + n2
-    
 End Function
 
-Function Subt(formula() As String) As Double
-    Dim numbers2(10) As Double
-    Dim subtraction As Double
-    Dim i As Integer
-    
-    Subt = 0
-    
-    'Convertendo para Double e armazenando no rolê
-    For i = 0 To UBound(formula())
-        If (IsNumeric(formula(i))) Then
-            numbers2(i) = CDbl(formula(i))
-        End If
-    Next
-    
-    For i = 0 To UBound(numbers2())
-        subtraction = Abs(subtraction) - numbers2(i)
-    Next i
-    
-    Subt = subtraction
+Function Subt(n1 As Double, n2 As Double) As Double
+    Subt = n1 - n2
+End Function
+
+Function Times(n1 As Double, n2 As Double) As Double
+    Times = n1 * n2
+End Function
+
+Function Div(n1 As Double, n2 As Double) As Double
+    Div = n1 / n2
 End Function
 
 Function OpsController(formula() As String)
@@ -375,6 +365,21 @@ Function OpsController(formula() As String)
         If (IsNumeric(formula(i)) = False) Then
             If (formula(i) = "+") Then
                 total = total + Sum(numbers3(i - 1), numbers3(i + 1))
+                ''Zerar os números após a adição (Pop)
+                numbers3(i - 1) = 0
+                numbers3(i + 1) = 0
+            ElseIf (formula(i) = "-") Then
+                total = total + Subt(numbers3(i - 1), numbers3(i + 1))
+                ''Zerar os números após a adição (Pop)
+                numbers3(i - 1) = 0
+                numbers3(i + 1) = 0
+            ElseIf (formula(i) = "*") Then
+                total = total + Times(numbers3(i - 1), numbers3(i + 1))
+                ''Zerar os números após a adição (Pop)
+                numbers3(i - 1) = 0
+                numbers3(i + 1) = 0
+            ElseIf (formula(i) = "/") Then
+                total = total + Div(numbers3(i - 1), numbers3(i + 1))
                 ''Zerar os números após a adição (Pop)
                 numbers3(i - 1) = 0
                 numbers3(i + 1) = 0
@@ -431,10 +436,7 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
         Case "-"
             Me.txtCalc = Me.txtCalc & "-"
         Case "a"
-            'Me.txtCalc = OpsController(StrToArray(Me.txtCalc))
             Call OpsController(StrToArray(Me.txtCalc))
-           'Jeito antigo (que funciona)
-           'Me.txtCalc = Subt(StrToArray(Me.txtCalc))
             
         'Para a tecla enter, mas não ta funcionando
         'Case KeyAscii = 13
