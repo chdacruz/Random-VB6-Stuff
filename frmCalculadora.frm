@@ -10,8 +10,8 @@ Begin VB.Form frmCalculadora
    ScaleHeight     =   6345
    ScaleWidth      =   6150
    StartUpPosition =   3  'Windows Default
-   Begin VB.Frame Frame1 
-      Caption         =   "Frame1"
+   Begin VB.Frame frame1 
+      Caption         =   "Painel"
       Height          =   3975
       Left            =   240
       TabIndex        =   1
@@ -119,7 +119,7 @@ Begin VB.Form frmCalculadora
          Top             =   360
          Width           =   735
       End
-      Begin VB.CommandButton cmdPonto 
+      Begin VB.CommandButton cmdVirgula 
          Caption         =   ","
          BeginProperty Font 
             Name            =   "MS Sans Serif"
@@ -324,6 +324,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+'Variavél usada para verificar o começo de uma nova operação de modo a limpar o TextField
+Dim isDone As Boolean
+
+
 Function Sum(n1 As Double, n2 As Double) As Double
     Sum = n1 + n2
 End Function
@@ -341,7 +345,7 @@ Function Div(n1 As Double, n2 As Double) As Double
 End Function
 
 Function OpsController(formula() As String)
-    Dim numbers3(10) As Double
+    Dim numbers3(100) As Double
     Dim i As Integer
     
     Dim total As Double
@@ -364,45 +368,136 @@ Function OpsController(formula() As String)
         'Se for um símbolo, realizar operação
         If (IsNumeric(formula(i)) = False) Then
             If (formula(i) = "+") Then
-                total = total + Sum(numbers3(i - 1), numbers3(i + 1))
-                ''Zerar os números após a adição (Pop)
+                total = Sum(numbers3(i - 1), numbers3(i + 1))
+                ''Zerar n1 após a operação (Pop), colocar o total da operação em n2 (Push)
                 numbers3(i - 1) = 0
-                numbers3(i + 1) = 0
+                numbers3(i + 1) = total
             ElseIf (formula(i) = "-") Then
-                total = total + Subt(numbers3(i - 1), numbers3(i + 1))
-                ''Zerar os números após a adição (Pop)
+                total = Subt(numbers3(i - 1), numbers3(i + 1))
+                ''Zerar n1 após a operação (Pop), colocar o total da operação em n2 (Push)
                 numbers3(i - 1) = 0
-                numbers3(i + 1) = 0
+                numbers3(i + 1) = total
             ElseIf (formula(i) = "*") Then
-                total = total + Times(numbers3(i - 1), numbers3(i + 1))
-                ''Zerar os números após a adição (Pop)
+                total = Times(numbers3(i - 1), numbers3(i + 1))
+                ''Zerar n1 após a operação (Pop), colocar o total da operação em n2 (Push)
                 numbers3(i - 1) = 0
-                numbers3(i + 1) = 0
+                numbers3(i + 1) = total
             ElseIf (formula(i) = "/") Then
-                total = total + Div(numbers3(i - 1), numbers3(i + 1))
-                ''Zerar os números após a adição (Pop)
+                total = Div(numbers3(i - 1), numbers3(i + 1))
+                ''Zerar n1 após a operação (Pop), colocar o total da operação em n2 (Push)
                 numbers3(i - 1) = 0
-                numbers3(i + 1) = 0
+                numbers3(i + 1) = total
             End If
         End If
     Next
     
     Me.txtCalc = CStr(total)
+    'Sinaliza o final da operação
+    isDone = True
+    
 End Function
 
 Function StrToArray(formula As String) As String()
-    Dim numbers4(10) As String
+    Dim numbers4(100) As String
     Dim i As Integer
+    Dim j As Integer
     
-    For i = 1 To Len(formula)
-        numbers4(i - 1) = Mid(formula, i, 1)
+    For i = 0 To Len(formula)
+        'Para fazer com que números quebrados possam ser processados como double
+        j = i + 1
+        If (Mid(formula, i + 1, 1) = ",") Then
+            Do While IsNumeric(Mid(formula, i + 1, 1))
+                j = j + 1
+                Mid(formula, i + 1, 1) = Mid(formula, i + 1, 1) & Mid(formula, j, 1)
+                'formula(i) = formula(i) & formula(j)
+            Loop
+        End If
+        numbers4(i) = Mid(formula, i + 1, 1)
     Next
     
     StrToArray = numbers4()
 
 End Function
 
+Function isCalculationDone()
+    If (isDone = True) Then
+        Me.txtCalc = ""
+        isDone = False
+    End If
+End Function
+
+
+
+Private Sub cmd0_Click()
+    Me.txtCalc = Me.txtCalc & "0"
+End Sub
+
+Private Sub cmd1_Click()
+    Me.txtCalc = Me.txtCalc & "1"
+End Sub
+
+Private Sub cmd2_Click()
+    Me.txtCalc = Me.txtCalc & "2"
+End Sub
+
+Private Sub cmd3_Click()
+    Me.txtCalc = Me.txtCalc & "3"
+End Sub
+
+Private Sub cmd4_Click()
+    Me.txtCalc = Me.txtCalc & "4"
+End Sub
+
+Private Sub cmd5_Click()
+    Me.txtCalc = Me.txtCalc & "5"
+End Sub
+
+Private Sub cmd6_Click()
+    Me.txtCalc = Me.txtCalc & "6"
+End Sub
+
+Private Sub cmd7_Click()
+    Me.txtCalc = Me.txtCalc & "7"
+End Sub
+
+Private Sub cmd8_Click()
+    Me.txtCalc = Me.txtCalc & "8"
+End Sub
+
+Private Sub cmd9_Click()
+    Me.txtCalc = Me.txtCalc & "9"
+End Sub
+
+Private Sub cmdClear_Click()
+    Me.txtCalc = ""
+End Sub
+
+Private Sub cmdDiv_Click()
+    Me.txtCalc = Me.txtCalc & "/"
+End Sub
+
+Private Sub cmdIgual_Click()
+    Call OpsController(StrToArray(Me.txtCalc))
+End Sub
+
+Private Sub cmdMais_Click()
+    Me.txtCalc = Me.txtCalc & "+"
+End Sub
+
+Private Sub cmdMenos_Click()
+    Me.txtCalc = Me.txtCalc & "-"
+End Sub
+
+Private Sub cmdMult_Click()
+    Me.txtCalc = Me.txtCalc & "*"
+End Sub
+
+Private Sub cmdVirgula_Click()
+    Me.txtCalc = Me.txtCalc & ","
+End Sub
+
 Private Sub Form_KeyPress(KeyAscii As Integer)
+    Call isCalculationDone
 
     Select Case Chr(KeyAscii)
         Case "0"
@@ -435,13 +530,15 @@ Private Sub Form_KeyPress(KeyAscii As Integer)
             Me.txtCalc = Me.txtCalc & "+"
         Case "-"
             Me.txtCalc = Me.txtCalc & "-"
-        Case "a"
+        Case ","
+            Me.txtCalc = Me.txtCalc & ","
+        Case "="
             Call OpsController(StrToArray(Me.txtCalc))
-            
-        'Para a tecla enter, mas não ta funcionando
-        'Case KeyAscii = 13
-            'Me.txtCalc = StrToInt
-            'Me.txtCalc = Me.txtCalc & "="
+        'Para a tecla enter
+        Case Chr(13)
+           Call OpsController(StrToArray(Me.txtCalc))
+        Case "c"
+            Me.txtCalc = ""
             
     End Select
 End Sub
